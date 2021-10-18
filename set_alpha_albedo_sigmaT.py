@@ -4,22 +4,104 @@ import time
 from pathlib import Path
 from array import *
 
-#Set the path to .xml rendering template:
+##########################################
+# Set general Rendering configurations:
+##########################################
+RenderWindows=True #set to true to generate batch file for rendering in Windows
+RenderUbuntu=True #set to true to generate bash file for rendering in Ubuntu
+
+myVersion = "0.6.0"          # set the Mitsuba version
+#myVersion = "0.5.0"          # set the Mitsuba version
+mySamples = 64               # declare number of samples for the integer
+myObject = "sphere_spiky.ply"# declare the filename of the main object to render
+objectType = "spiky"         # give a short name to identify the object geometry
+myWidth = 128                # width of image to render
+myHeight = 128				 # height of image to render
+
+
+##########################################
+# Set the path to .xml rendering template:
+##########################################
 #exmfile = "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/spiky_sphere.xml" #'D:/cbox/spiky_sphere.xml'
 #exmfile = "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/Spiky_Sphere_TEMPLATE/sphere_template_TEST_params.xml"
-exmfile = "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/Spiky_Sphere_TEMPLATE/sphere_template_TEST_params_mitsuba_v0.6.xml"
+#exmfile = "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/Spiky_Sphere_TEMPLATE/sphere_template_TEST_params_mitsuba_v0.6.xml"
+#exmfile= "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/Rendering_TEMPLATES/sphere_bumpy_template_params.xml"
+#exmfile= "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/Rendering_TEMPLATES/sphere_bumpy_template_params_UBUNTU.xml"
 
-#Set the rendering parameters to be changed:
-prenameSigT = 'spectrum name=\"sigmaT\" value=\"'   #Variable to set initial value of parameter in template
-prenameAlbedo = 'spectrum name=\"albedo\" value=\"' #Variable to set initial value of parameter in template
-prenameAlpha = 'float name=\"alpha\" value=\"'      #Variable to set initial value of parameter in template
+exmfile= "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/Rendering_TEMPLATES/rendering_template_params.xml"
+
+
+#############################################
+# Set the rendering parameters to be changed:
+#############################################
+#Variables to set initial value of each parameter in template:
+prenameSigT = 'spectrum name=\"sigmaT\" value=\"'
+prenameAlbedo = 'spectrum name=\"albedo\" value=\"'
+prenameAlpha = 'float name=\"alpha\" value=\"'
+prenameSamples = 'integer name=\"sampleCount\" value=\"'
+prenameObject =  'string name=\"filename\" value=CHANGE'
+prenameVersion = 'scene version=\"'
+prenameWidth =  'integer name=\"width\" value=\"'
+prenameHeight=  'integer name=\"height\" value=\"'
 #prenameAngle = '<rotate y="1" angle="/> <!--Rotate object-->'
 
-lastnameSigT = prenameSigT      #Variable to track the last change (value) in this rendering parameter
-lastnameAlbedo = prenameAlbedo  #Variable to track the last change (value) in this rendering parameter
-lastnameAlpha = prenameAlpha    #Variable to track the last change (value) in this rendering parameter
+#Variables to track the last change (value) in each rendering parameter:
+lastnameSigT = prenameSigT
+lastnameAlbedo = prenameAlbedo
+lastnameAlpha = prenameAlpha
+lastnameSamples = prenameSamples
+lastnameObject = prenameObject
+lastnameVersion = prenameVersion
+lastnameWidth = prenameWidth
+lastnameHeight = prenameHeight
 #lastnameAngle = prenameAngle
-params = []
+
+
+# CHANGE MITSUBA VERSION:
+s = open(exmfile).read()
+stringVersion = prenameVersion + str(myVersion) + '\"'
+s = s.replace(lastnameVersion, stringVersion)
+lastnameVersion = stringVersion
+f = open(exmfile, 'w')
+f.write(s)
+f.close()
+
+# CHANGE SAMPLES:
+s = open(exmfile).read()
+stringSamples = prenameSamples + str(mySamples) + '\"'
+s = s.replace(lastnameSamples, stringSamples)
+lastnameSamples = stringSamples
+f = open(exmfile, 'w')
+f.write(s)
+f.close()
+
+# CHANGE OBJECT
+s = open(exmfile).read()
+stringObject = 'string name="filename" value=\"' + myObject + '\"'
+s = s.replace(lastnameObject, stringObject)
+lastnameObject = stringObject
+f = open(exmfile, 'w')
+f.write(s)
+f.close()
+
+# CHANGE IMAGE WIDTH
+s = open(exmfile).read()
+stringWidth = prenameWidth + str(myWidth) + '\"'
+s = s.replace(lastnameWidth, stringWidth)
+lastnameWidth = stringWidth
+f = open(exmfile, 'w')
+f.write(s)
+f.close()
+
+# CHANGE IMAGE HEIGHT
+s = open(exmfile).read()
+stringHeight= prenameHeight + str(myHeight) + '\"'
+s = s.replace(lastnameHeight, stringHeight)
+lastnameHeight = stringHeight
+f = open(exmfile, 'w')
+f.write(s)
+f.close()
+
 
 #Declare list of parameters to be written in each rendering configuration:
 Params_alpha = [0,0,0,0,0,0,0.05,0.05,0.05,0.05,0.05,0.05,0.1,0.1,0.1,0.1,0.1,0.1,0.25,0.25,0.25,0.25,0.25,0.25,0.5,0.5,0.5,0.5,0.5,0.5]
@@ -29,7 +111,7 @@ Params_sigmaT = [0.1,1,2,3,3,4,0.1,1,2,3,3,4,0.1,1,2,3,3,4,0.1,1,2,3,3,4,0.1,1,2
 #Params_alpha = [0, 0.05, 0.10, 0.15, 0.25, 0.5]
 #angles=[n for n in range(0,185,5)]#creates list of angles from 0 to 180 in steps of 5 degrees
 
-filename=""
+
 
 # Create an xml file For each rendering configuration by replacing the values in template:
 for i in range(len(Params_alpha)):
@@ -81,8 +163,7 @@ for i in range(len(Params_alpha)):
 	#####################################################
 	#Create a new .xml file with current rendering configuration:
 	#####################################################
-	filename = 'Spiky_sphere_alpha_'+str(Params_alpha[i])+'_sigma_'+str(Params_sigmaT[i])+'_albedo_'+str(Params_albedo[i])
-	#filename = 'Spiky_sphere_obj_alpha_' +str(Params_alpha[i])+ '_angle_' + str(angles[j])
+	filename = objectType + '_alpha_'+str(Params_alpha[i]) + '_sigT_'+str(Params_sigmaT[i]) + '_albedo_'+str(Params_albedo[i])+'_sampl_'+str(mySamples)
 	print (filename)
 	new_xml=open(filename+'.xml', 'w')
 	new_xml.write(s)
@@ -99,20 +180,21 @@ for i in range(len(Params_alpha)):
 	#os.system('convert %s %s'%(filename,'./Spiky_sphere_data/alpha_%s/%s_%s.png'%(str(Params_alpha[i]),str(Params_sigmaT[i]), str(Params_albedo[i]))))
 	#params.append([Params_sigmaT[i], Params_albedo[i], elapsed_time])
 
-	#####################################################
-	# Create batch file for rendering (WINDOWS):
-	#####################################################
-	#line='mitsuba -o '+str(filename)+('.png ')+str(filename)+('.xml')
-	#with open('renderBatchFile.txt', 'a') as f1:
-	#	f1.write(line + os.linesep)
-
-	#####################################################
-	# Create bash file for rendering (LINUX):
-	#####################################################
-	line = 'mitsuba -o ' + str(filename) + ('.png ') + str(filename) + ('.xml')
-	line = 'mitsuba folder1/'+str(filename)+('.xml')+' && '+ 'mtsutil tonemap folder1/'+ str(filename)+('.exr')+ ' &&'
-	with open('renderBashFile.txt', 'a') as f2:
-		f2.write(line + os.linesep)
+	if RenderWindows:
+		#####################################################
+		# Create batch file for rendering (WINDOWS):
+		#####################################################
+		line='mitsuba -o '+str(filename)+('.png ')+str(filename)+('.xml')
+		with open('renderBatchFile.txt', 'a') as f1:
+			f1.write(line + os.linesep)
+	if RenderUbuntu:
+		#####################################################
+		# Create bash file for rendering (Ubuntu):
+		#####################################################
+		line = 'mitsuba folder1/'+str(filename)+('.xml')+' && '+ 'mtsutil tonemap folder1/'+ str(filename)+('.exr')+ ' && '
+		with open('renderBashFile.txt', 'a') as f2:
+			#f2.write(line + os.linesep)
+			f2.write(line)
 
 #####################################################
 # Restore the .xml original template values:
@@ -123,7 +205,13 @@ s = open(exmfile).read()
 s = s.replace(lastnameSigT, prenameSigT)
 s = s.replace(lastnameAlbedo, prenameAlbedo)
 s = s.replace(lastnameAlpha, prenameAlpha)
+s = s.replace(lastnameVersion, prenameVersion)
+s = s.replace(lastnameObject, prenameObject)
+s = s.replace(lastnameSamples, prenameSamples)
+s = s.replace(lastnameWidth, prenameWidth)
+s = s.replace(lastnameHeight, prenameHeight)
 #s = s.replace(lastnameAngle, prenameAngle)
+
 f = open(exmfile, 'w')
 f.write(s)
 f.close()

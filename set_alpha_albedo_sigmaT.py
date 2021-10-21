@@ -10,9 +10,9 @@ from array import *
 RenderWindows=True #set to true to generate batch file for rendering in Windows
 RenderUbuntu=True #set to true to generate bash file for rendering in Ubuntu
 
-myVersion = "0.6.0"          # set the Mitsuba version
-#myVersion = "0.5.0"          # set the Mitsuba version
-mySamples = 64               # declare number of samples for the integer
+#myVersion = "0.6.0"          # set the Mitsuba version
+myVersion = "0.5.0"          # set the Mitsuba version
+mySamples = 1048               # declare number of samples for the integer
 myObject = "sphere_spiky.ply"# declare the filename of the main object to render
 objectType = "spiky"         # give a short name to identify the object geometry
 myWidth = 128                # width of image to render
@@ -34,6 +34,22 @@ exmfile= "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/te
 #############################################
 # Set the rendering parameters to be changed:
 #############################################
+
+#Declare list of parameters to be written in each rendering configuration:
+#Params_alpha = [0,0,0,0,0,0,0.05,0.05,0.05,0.05,0.05,0.05,0.1,0.1,0.1,0.1,0.1,0.1,0.25,0.25,0.25,0.25,0.25,0.25,0.5,0.5,0.5,0.5,0.5,0.5]
+#Params_albedo = [0.5,0.9,0.6,0.3,0.95,0.9,0.5,0.9,0.6,0.3,0.95,0.9,0.5,0.9,0.6,0.3,0.95,0.9,0.5,0.9,0.6,0.3,0.95,0.9,0.5,0.9,0.6,0.3,0.95,0.9]
+#Params_sigmaT = [0.1,1,2,3,3,4,0.1,1,2,3,3,4,0.1,1,2,3,3,4,0.1,1,2,3,3,4,0.1,1,2,3,3,4]
+
+Params_alpha = [0.05]*40
+Params_albedo = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95, 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95, 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95]
+Params_sigmaT = [0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,4,4,4,4,4,4,4,4,4,4]
+
+#Params_alpha = [0, 0.05, 0.10, 0.15, 0.25, 0.5]
+#angles=[n for n in range(0,185,5)]#creates list of angles from 0 to 180 in steps of 5 degrees
+
+
+
+
 #Variables to set initial value of each parameter in template:
 prenameSigT = 'spectrum name=\"sigmaT\" value=\"'
 prenameAlbedo = 'spectrum name=\"albedo\" value=\"'
@@ -101,16 +117,6 @@ lastnameHeight = stringHeight
 f = open(exmfile, 'w')
 f.write(s)
 f.close()
-
-
-#Declare list of parameters to be written in each rendering configuration:
-Params_alpha = [0,0,0,0,0,0,0.05,0.05,0.05,0.05,0.05,0.05,0.1,0.1,0.1,0.1,0.1,0.1,0.25,0.25,0.25,0.25,0.25,0.25,0.5,0.5,0.5,0.5,0.5,0.5]
-Params_albedo = [0.5,0.9,0.6,0.3,0.95,0.9,0.5,0.9,0.6,0.3,0.95,0.9,0.5,0.9,0.6,0.3,0.95,0.9,0.5,0.9,0.6,0.3,0.95,0.9,0.5,0.9,0.6,0.3,0.95,0.9]
-Params_sigmaT = [0.1,1,2,3,3,4,0.1,1,2,3,3,4,0.1,1,2,3,3,4,0.1,1,2,3,3,4,0.1,1,2,3,3,4]
-
-#Params_alpha = [0, 0.05, 0.10, 0.15, 0.25, 0.5]
-#angles=[n for n in range(0,185,5)]#creates list of angles from 0 to 180 in steps of 5 degrees
-
 
 
 # Create an xml file For each rendering configuration by replacing the values in template:

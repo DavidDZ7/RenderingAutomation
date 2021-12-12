@@ -1,8 +1,29 @@
+#############################################################################################
+# Python Script to automate generation of xmls for Mitsuba renderer
+# This script allows to change material parameters such as alpha, albedo, sigmaT
+# as well as the image size and samples per pixel.
+# This script automates also the generation of the 2 types of motion for project T1.
+# The generated batch file can be used to automate the rendering of the generated .xml files.
+#
+# David Norman Díaz Estrada
+# davidnd@stud.ntnu.no
+#############################################################################################
+
 import sys, os
-import numpy as np
-import time
 from pathlib import Path
 from array import *
+
+##########################################
+# Set paths and folder names:
+##########################################
+exmfile="rendering_template_params_motion.xml" # Set the path to .xml rendering template
+myOutputFolder="T1_12_videos"   # Give a name to the output folder that will contain all the generated xmls
+
+workingPath=os.path.dirname(os.path.realpath(__file__))# Get path of this python script
+OutputPath=workingPath+'\\'+myOutputFolder+'\\'
+print("Output Folder: " + myOutputFolder)
+print("Output Path: " + OutputPath)
+
 
 ##########################################
 # Set general Rendering configurations:
@@ -12,43 +33,21 @@ RenderUbuntu=False #set to true to generate bash file for rendering in Ubuntu
 
 #myVersion = "0.6.0"          # set the Mitsuba version
 myVersion = "0.5.0"          # set the Mitsuba version
-mySamples = 1024               # declare number of samples for the integer
+mySamples = 4096               # declare number of samples for the integer
 myObject = "sphere_spiky.ply"# declare the filename of the main object to render
 objectType = "spiky"         # give a short name to identify the object geometry
-myWidth = 400                # width of image to render
-myHeight = 400				 # height of image to render
-
-
-##########################################
-# Set the path to .xml rendering template:
-##########################################
-#exmfile = "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/spiky_sphere.xml" #'D:/cbox/spiky_sphere.xml'
-#exmfile = "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/Spiky_Sphere_TEMPLATE/sphere_template_TEST_params.xml"
-#exmfile = "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/Spiky_Sphere_TEMPLATE/sphere_template_TEST_params_mitsuba_v0.6.xml"
-#exmfile= "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/Rendering_TEMPLATES/sphere_bumpy_template_params.xml"
-#exmfile= "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/Rendering_TEMPLATES/sphere_bumpy_template_params_UBUNTU.xml"
-
-exmfile= "D:/DocumentosDNDE/COSI/Semestre 3/AppearancePerception/finalProject/test_pyhtonMitsuba/Mitsuba 0.5.0/Rendering_TEMPLATES/rendering_template_params_motion.xml"
+myWidth = 512                # width of image to render
+myHeight = 512				 # height of image to render
 
 
 #############################################
 # Set the rendering parameters to be changed:
 #############################################
 
-#Declare list of parameters to be written in each rendering configuration:
-#Params_alpha = [0,0,0,0,0,0,0.05,0.05,0.05,0.05,0.05,0.05,0.1,0.1,0.1,0.1,0.1,0.1,0.25,0.25,0.25,0.25,0.25,0.25,0.5,0.5,0.5,0.5,0.5,0.5]
-#Params_albedo = [0.5,0.9,0.6,0.3,0.95,0.9,0.5,0.9,0.6,0.3,0.95,0.9,0.5,0.9,0.6,0.3,0.95,0.9,0.5,0.9,0.6,0.3,0.95,0.9,0.5,0.9,0.6,0.3,0.95,0.9]
-#Params_sigmaT = [0.1,1,2,3,3,4,0.1,1,2,3,3,4,0.1,1,2,3,3,4,0.1,1,2,3,3,4,0.1,1,2,3,3,4]
+Params_alpha = [0.05]*6
+Params_albedo = [0.3,0.8,0.3,0.8,0.3,0.8]
+Params_sigmaT = [5,5,30,30,100,100]
 
-
-#Params_alpha = [0.05]*40
-#Params_albedo = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95, 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95, 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95]
-#Params_sigmaT = [0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,4,4,4,4,4,4,4,4,4,4]
-
-
-Params_alpha = [0.05]*5
-Params_albedo = [0.1,0.9,0.1,0.5,0.95]
-Params_sigmaT = [0.1,1,4,4,4]
 
 angles=[n for n in range(0,185,5)]#creates list of angles from 0 to 180 in steps of 5 degrees
 
@@ -182,7 +181,7 @@ for motion in range(2):
                 filename = objectType +'_rOBJ' + '_alpha_' + str(Params_alpha[i]) + '_sigT_' + str(
                     Params_sigmaT[i]) + '_albedo_' + str(Params_albedo[i]) + '_angle_' + str(angles[j]) + '_sampl_' + str(mySamples)
                 print(filename)
-                new_xml = open(filename + '.xml', 'w')
+                new_xml = open(OutputPath+filename+'.xml', 'w')
                 new_xml.write(s)
 
             if rotateBackground:
@@ -201,7 +200,7 @@ for motion in range(2):
                 filename = objectType + '_rBG' + '_alpha_' + str(Params_alpha[i]) + '_sigT_' + str(
                     Params_sigmaT[i]) + '_albedo_' + str(Params_albedo[i]) + '_angle_' + str(angles[j]) + '_sampl_' + str(mySamples)
                 print(filename)
-                new_xml = open(filename + '.xml', 'w')
+                new_xml = open(OutputPath+filename+'.xml', 'w')
                 new_xml.write(s)
 
 
@@ -211,15 +210,15 @@ for motion in range(2):
                 #####################################################
                 # Create batch file for rendering (WINDOWS):
                 #####################################################
-                line='mitsuba -o '+str(filename)+('.png ')+str(filename)+('.xml')
-                with open('renderBatchFile.txt', 'a') as f1:
+                line = 'mitsuba -o ' + myOutputFolder + '/' + str(filename) + ('.png ') + myOutputFolder + '/' + str(filename) + ('.xml')
+                with open(OutputPath+'renderBatchFile.txt', 'a') as f1:
                     f1.write(line + os.linesep)
             if RenderUbuntu:
                 #####################################################
                 # Create bash file for rendering (Ubuntu):
                 #####################################################
-                line = 'mitsuba folder1/'+str(filename)+('.xml')+' && '+ 'mtsutil tonemap folder1/'+ str(filename)+('.exr')+ ' && '
-                with open('renderBashFile.txt', 'a') as f2:
+                line = 'mitsuba ' + myOutputFolder + '/' + str(filename) + ('.xml') + ' && ' + 'mtsutil tonemap ' + myOutputFolder + '/' + str(filename) + ('.exr') + ' && '
+                with open(OutputPath+'renderBashFile.txt', 'a') as f2:
                     #f2.write(line + os.linesep)
                     f2.write(line)
 

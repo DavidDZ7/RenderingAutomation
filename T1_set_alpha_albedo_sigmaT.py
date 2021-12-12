@@ -1,8 +1,12 @@
-###################################################################
+#############################################################################################
 # Python Script to automate generation of xmls for Mitsuba renderer
+# This script allows to change material parameters such as alpha, albedo, sigmaT
+# as well as the image size and samples per pixel.
+# The generated batch file can be used to automate the rendering of the generated .xml files.
+#
 # David Norman Díaz Estrada
 # davidnd@stud.ntnu.no
-###################################################################
+#############################################################################################
 
 import sys, os
 from pathlib import Path

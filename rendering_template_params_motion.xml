@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+
+	Automatically converted from Wavefront OBJ
+
+-->
+
+<scene version=">
+	<integrator id="integrator" type="bdpt">
+		<integer name="rrDepth" value="20"/>	
+	</integrator>
+
+
+	<medium id="myMediumMitsuba" type="homogeneous">
+		<!--Object properties for the target-->
+		<spectrum name="sigmaT" value="/>
+		<spectrum name="albedo" value="/>
+		<phase type="isotropic"/>
+	</medium>
+
+
+
+	<medium id="myMediumAssembly" type="homogeneous">
+		<!-- Object properties for the assembly   -->
+		<spectrum name="sigmaA" value="2500"/>
+		<spectrum name="sigmaS" value="2500"/>
+		<phase type="isotropic"/>
+	</medium>
+
+	<!-- Models -->
+
+	<shape type="ply" id="BuddhaTransparent_mesh">
+		<!-- Buddha target -->
+		<ref name="interior" id="myMediumMitsuba"/>
+		<string name="filename" value=CHANGE/> 
+		<integer name="shapeIndex" value="0"/>
+		
+
+		<!--Config for rough dielectric material: -->
+		<bsdf type="roughdielectric">
+			<float name="intIOR" value="1.5"/>
+			<float name="extIOR" value="1.0"/>
+			<float name="alpha" value="/>
+		</bsdf>
+		
+		<transform name="toWorld">
+			<scale value="0.05"/>
+			<rotate y="1" angle="0"/><!--ROTATE OBJECT _____________________________________________________________________________________________________________________________-->
+			<rotate x="1" angle="45"/>
+		</transform>
+	</shape>
+
+
+	<shape type="cylinder">
+		<float name="radius" value="0.40"/>
+		
+
+		<bsdf type="twosided">
+			<bsdf type="diffuse">
+				<texture type="bitmap" name="reflectance">
+					<string name="wrapMode" value="repeat"/>
+					<string name="filename" value="BackgroundTexture.png"/>
+					<float name="uscale" value="2.5"/>
+					<float name="vscale" value="1.5"/>
+				</texture>
+			</bsdf>
+		</bsdf>
+
+
+
+		<transform name="toWorld">
+			<rotate z="1" angle="0"/><!-- ROTATE BACKGROUND cylinder along its main axis _________________________________________________________________________________________-->
+			<scale z="2"/> <!-- Make the cylinder larger -->
+			<rotate x="1" angle="80"/> <!-- tilt the cylinder -->
+			<translate  y="0.32" />
+		</transform>
+
+	</shape>
+	
+	
+	
+	<!-- Viewing and lighting conditions -->
+	<sensor type="perspective">
+		<float name="fov" value="8"/>
+		<transform name="toWorld">
+			<!-- Move and rotate the camera so that looks from (0, 100, 0) to (0, 0, 0)
+			and the direction (0, 0, 0) points "up" in the output image -->
+			<lookat origin="0, 0.85, -0.85" target="0, 0, 0"  up="0, 1, 0"/>
+		</transform>
+		<film type="ldrfilm">
+			<integer name="width" value="/> <!--<string name="width" value="512"/>  -->
+			<integer name="height" value="/> <!-- <integer name="height" value="512"/> -->
+			<string name="pixelFormat" value="rgb"/>
+			<string name="fileFormat" value="png"/>
+			<boolean name="banner" value="false"/> 
+		</film>
+		
+		<sampler type="ldsampler">
+			<integer name="sampleCount" value="/>
+		</sampler>
+	</sensor>
+
+	<shape type="rectangle">
+		<transform name="toWorld">
+			<rotate x="1" angle="90"/>
+			<scale x="0.4" y="0.4" z="0.4"/>
+			<translate  y="0.47" z="0"/>
+		</transform>
+		
+		<emitter type="area">
+			<float name="samplingWeight" value="1"/>
+			<spectrum name="radiance" filename="IlluminantD65.txt"/>
+		</emitter>
+	</shape>
+	
+</scene>
